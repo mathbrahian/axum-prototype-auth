@@ -1,0 +1,101 @@
+use axum::{
+    extract::{Json, State},
+    http::StatusCode,
+    response::IntoResponse,
+};
+
+use uuid::Uuid;
+
+use argon2::{
+    password_hash::{
+        rand_core::OsRng,
+        PasswordHasher,
+        SaltString
+    },
+    Argon2,
+};
+
+use crate::AppState;
+
+use serde::{
+    Deserialize,
+    Serialize
+};
+
+use entity::user;
+
+use sea_orm::{
+    ActiveModelTrait,
+    ColumnTrait,
+    EntityTrait,
+    QueryFilter,Set
+};
+
+use serde_json;
+
+pub async fn user_register(
+    State(state): State<AppState>,
+    Json(payload): Json<UserDeserialize>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let email_is_registered = user::Entity::find()
+        .filter(user::Column::Email.eq(payload.email.clone()))
+        .one(&state.conn)
+        .await
+        .map_err(|e| {
+            let error_database = serde_json::json!({
+                "message": format!("Database error: {}", e),
+            });
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(error_database))
+        })
+        .unwrap()
+        .is_some();
+
+    if email_is_registered {
+        let error_email_is_registered = serde_json::json!({
+            "message": "this_email_is_registered",
+        });
+        return Err((StatusCode::BAD_REQUEST, Json(error_email_is_registered)));
+    }
+
+    let salt = SaltString::generate(&mut OsRng);
+
+    let hashed_password = Argon2::default()
+        .hash_password(payload.password.as_bytes(), &salt)
+        .unwrap()
+        .to_string();
+
+    let user_model = user::ActiveModel {
+        email: Set(payload.email),
+        password: Set(hashed_password),
+        id: Set(Uuid::new_v4()),
+        salt: Set(salt.to_string()),
+    };
+
+    let user_model_insert: user::Model = user_model
+        .insert(&state.conn)
+        .await
+        .map_err(|e| {
+            let error_database = serde_json::json!({
+                "message": format!("Database error: {}", e),
+            });
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(error_database))
+        })
+        .unwrap();
+
+    let user_model_inserted = GetUser {
+        id: user_model_insert.id,
+    };
+
+    Ok((StatusCode::CREATED, Json(user_model_inserted)))
+}
+
+#[derive(Deserialize)]
+pub struct UserDeserialize {
+    email: String,
+    password: String,
+}
+
+#[derive(Serialize)]
+pub struct GetUser {
+    id: Uuid,
+}
