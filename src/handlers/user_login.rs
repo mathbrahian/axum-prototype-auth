@@ -72,7 +72,7 @@ pub async fn user_login(
 
     let now = chrono::Utc::now();
     let iat = now.timestamp() as usize;
-    let exp = (now + chrono::Duration::seconds(10)).timestamp() as usize;
+    let exp = (now + chrono::Duration::minutes(60)).timestamp() as usize;
 
     let claims = Claims{
         sub: user_filter.id.to_string(),

@@ -52,7 +52,7 @@ pub async fn user_register(
 
     if email_is_registered {
         let error_email_is_registered = serde_json::json!({
-            "message": "this_email_is_registered",
+            "message": "this email is registered",
         });
         return Err((StatusCode::BAD_REQUEST, Json(error_email_is_registered)));
     }
