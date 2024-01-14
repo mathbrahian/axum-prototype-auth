@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_PORT: 5432
     ports:
-      - 5432:5432
+      - 6000:5432
     networks:
       - auth_net
     deploy:  
@@ -23,7 +23,7 @@ services:
     volumes:
       - .:/usr/src/app
     ports:
-      - 3000:3000
+      - 6050:3000
     networks:
       - auth_net
     deploy:

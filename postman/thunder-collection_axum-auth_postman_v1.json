@@ -1,0 +1,92 @@
+{
+    "info": {
+        "_postman_id": "9103e886-aa64-4bf0-bbe5-6263e5a56594",
+        "name": "axum-auth",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "description": ""
+    },
+    "item": [
+        {
+            "name": "register-rust",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "localhost:6050/user/api/register",
+                    "path": [
+                        "user",
+                        "api",
+                        "register"
+                    ],
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "6050"
+                },
+                "body": {
+                    "mode": "raw",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    },
+                    "raw": "{\n\"email\": \"email@email.com\",\n\"password\": \"password\"\n}"
+                }
+            }
+        },
+        {
+            "name": "login-rust",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "localhost:6050/user/api/login",
+                    "path": [
+                        "user",
+                        "api",
+                        "login"
+                    ],
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "6050"
+                },
+                "body": {
+                    "mode": "raw",
+                    "options": {
+                        "raw": {
+                            "language": "json"
+                        }
+                    },
+                    "raw": "{\n\"email\": \"email@email.com\",\n\"password\": \"password\"\n}"
+                }
+            }
+        },
+        {
+            "name": "auth-rust",
+            "request": {
+                "method": "POST",
+                "url": {
+                    "raw": "localhost:6050/user/api/auth",
+                    "path": [
+                        "user",
+                        "api",
+                        "auth"
+                    ],
+                    "host": [
+                        "localhost"
+                    ],
+                    "port": "6050"
+                },
+                "auth": {
+                    "type": "bearer",
+                    "bearer": [
+                        {
+                            "key": "token",
+                            "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmYzk3YTY4ZS1hMDlhLTRkNDUtYmU3My1jZGZkYTM5MmU4NzgiLCJpYXQiOjE3MDQ2MDU0NzUsImV4cCI6MTcwNDYwOTA3NX0.gwo3OrGmSw2GkVgL3w90i3EWqAy9ggZAUFr7jaZQurM",
+                            "type": "string"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
