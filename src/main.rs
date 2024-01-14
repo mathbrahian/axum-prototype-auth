@@ -14,7 +14,7 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
-    let conn = Database::connect("postgres://postgres:postgres@localhost:5432/postgres")
+    let conn = Database::connect("postgres://postgres:postgres@auth_db:5432/postgres")
         .await
         .expect("Database connection failed");
 

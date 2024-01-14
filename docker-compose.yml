@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  auth_db:
+    image: postgres:15-bullseye
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: 5432
+    ports:
+      - 5432:5432
+    networks:
+      - auth_net
+    deploy:  
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 300M
+
+  auth:
+    build: .
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 3000:3000
+    networks:
+      - auth_net
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 2000M
+    depends_on:
+      auth_db:
+        condition: service_started
+
+networks:
+  auth_net:
+    driver: bridge
+    name: auth_net
