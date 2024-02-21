@@ -2,6 +2,8 @@ use axum::{routing::get, Router};
 
 use sea_orm::{Database, DatabaseConnection};
 
+use dotenv::dotenv;
+
 use routes::auth_router;
 
 mod handlers;
@@ -14,7 +16,12 @@ pub struct AppState {
 
 #[tokio::main]
 async fn main() {
-    let conn = Database::connect("postgres://postgres:postgres@auth_db:5432/postgres")
+    dotenv().ok();
+
+    let database_url = std::env::var("DATABASE_URL")
+        .unwrap();
+
+    let conn = Database::connect(database_url)
         .await
         .expect("Database connection failed");
 
