@@ -67,7 +67,7 @@ pub async fn user_register(
     let user_model = user::ActiveModel {
         email: Set(payload.email),
         password: Set(hashed_password),
-        id: Set(Uuid::new_v4()),
+        id: Set(payload.id),
         salt: Set(salt.to_string()),
     };
 
@@ -93,6 +93,7 @@ pub async fn user_register(
 pub struct UserDeserialize {
     email: String,
     password: String,
+    id: Uuid,
 }
 
 #[derive(Serialize)]
