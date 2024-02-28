@@ -18,6 +18,6 @@ WORKDIR /usr/src/app
 
 COPY --from=builder /usr/src/axum-prototype-auth/target/release/axum-prototype-auth /usr/src/app/axum-prototype-auth
 
-EXPOSE 3000
+EXPOSE 80
 
 CMD ["./axum-prototype-auth"]
