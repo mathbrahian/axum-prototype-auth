@@ -31,8 +31,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4'
-          memory: 2000M
+          cpus: '1'
+          memory: 1000M
     depends_on:
       auth_db:
         condition: service_started
