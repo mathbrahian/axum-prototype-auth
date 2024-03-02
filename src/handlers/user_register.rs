@@ -15,7 +15,7 @@ use argon2::{
     Argon2,
 };
 
-use crate::AppState;
+use crate::{utils, AppState};
 
 use serde::{
     Deserialize,
@@ -31,7 +31,10 @@ use sea_orm::{
     QueryFilter,Set
 };
 
+
 use serde_json;
+
+use utils::create_token::create_token;
 
 pub async fn user_register(
     State(state): State<AppState>,
@@ -82,11 +85,11 @@ pub async fn user_register(
         })
         .unwrap();
 
-    let user_model_inserted = GetUser {
-        id: user_model_insert.id,
-    };
+        let token = create_token(user_model_insert.id);
 
-    Ok((StatusCode::CREATED, Json(user_model_inserted)))
+        let authenticate = serde_json::json!({"token": token, "email": user_model_insert.email});
+
+    Ok((StatusCode::CREATED, Json(authenticate)))
 }
 
 #[derive(Deserialize)]
@@ -99,4 +102,11 @@ pub struct UserDeserialize {
 #[derive(Serialize)]
 pub struct GetUser {
     id: Uuid,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Claims {
+    sub: String,
+    iat: usize,
+    exp: usize,
 }

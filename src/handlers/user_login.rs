@@ -28,13 +28,12 @@ use sea_orm::{
 
 use serde_json;
 
-use chrono;
-
-use jsonwebtoken::{encode, EncodingKey, Header};
-
 use entity::user;
 
-use crate::AppState;
+
+use crate::{utils, AppState};
+
+use utils::create_token::create_token;
 
 pub async fn user_login(
     State(state): State<AppState>,
@@ -70,27 +69,7 @@ pub async fn user_login(
         return Err((StatusCode::BAD_REQUEST, Json(error_is_valid_password)));
     };
 
-    let now = chrono::Utc::now();
-    let iat = now.timestamp() as usize;
-    let exp = (now + chrono::Duration::minutes(60)).timestamp() as usize;
-
-    let claims = Claims{
-        sub: user_filter.id.to_string(),
-        exp,
-        iat,
-    };
-
-    let token = encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret("secret".as_ref())
-    ).map_err(|e| {
-        let error_jwt = serde_json::json!({
-            "message": format!("jwt token creation error: {}", e),
-        });
-        return (StatusCode::INTERNAL_SERVER_ERROR, Json(error_jwt))
-    })
-    .unwrap();
+    let token = create_token(user_filter.id);
 
     let authenticate = serde_json::json!({"token": token});
 

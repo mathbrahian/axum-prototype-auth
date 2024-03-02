@@ -8,6 +8,7 @@ use routes::auth_router;
 
 mod handlers;
 mod routes;
+mod utils;
 
 #[derive(Clone)]
 pub struct AppState {
