@@ -19,7 +19,7 @@ pub struct AppState {
 async fn main() {
     dotenv().ok();
 
-    let database_url = std::env::var("DATABASE_URL")
+    let database_url = std::env::var("DATABASE_AUTH_URL")
         .unwrap();
 
     let conn = Database::connect(database_url)
@@ -32,7 +32,7 @@ async fn main() {
         .route("/ping", get(ping))
         .nest("/api", auth_router());
 
-    let app = Router::new().nest("/user", user_router).with_state(state);
+    let app = Router::new().nest("/auth", user_router).with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:80").await.unwrap();
 
