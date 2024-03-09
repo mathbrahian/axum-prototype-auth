@@ -10,6 +10,9 @@ mod handlers;
 mod routes;
 mod utils;
 
+use tower_http::trace::{self, TraceLayer};
+use tracing::Level;
+
 #[derive(Clone)]
 pub struct AppState {
     conn: DatabaseConnection,
@@ -18,6 +21,11 @@ pub struct AppState {
 #[tokio::main]
 async fn main() {
     dotenv().ok();
+
+    tracing_subscriber::fmt()
+    .with_target(false)
+    .compact()
+    .init();
 
     let database_url = std::env::var("DATABASE_AUTH_URL")
         .unwrap();
@@ -32,7 +40,14 @@ async fn main() {
         .route("/ping", get(ping))
         .nest("/api", auth_router());
 
-    let app = Router::new().nest("/auth", user_router).with_state(state);
+    let app = Router::new().nest("/auth", user_router).with_state(state).layer(
+        TraceLayer::new_for_http()
+            .make_span_with(trace::DefaultMakeSpan::new()
+                .level(Level::INFO))
+            .on_response(trace::DefaultOnResponse::new()
+                .level(Level::INFO)),
+
+    );
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:80").await.unwrap();
 
