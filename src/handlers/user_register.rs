@@ -6,14 +6,7 @@ use axum::{
 
 use uuid::Uuid;
 
-use argon2::{
-    password_hash::{
-        rand_core::OsRng,
-        PasswordHasher,
-        SaltString
-    },
-    Argon2,
-};
+use sha256::digest;
 
 use crate::{utils, AppState};
 
@@ -60,16 +53,11 @@ pub async fn user_register(
         return Err((StatusCode::BAD_REQUEST, Json(error_email_is_registered)));
     }
 
-    // let salt = SaltString::generate(&mut OsRng);
-
-    // let hashed_password = Argon2::default()
-    //     .hash_password(payload.password.as_bytes(), &salt)
-    //     .unwrap()
-    //     .to_string();
+    let hashed_password = digest(payload.password);
 
     let user_model = user::ActiveModel {
         email: Set(payload.email),
-        password: Set(payload.password),
+        password: Set(hashed_password),
         id: Set(payload.id),
         salt: Set("salt".to_string()),
     };

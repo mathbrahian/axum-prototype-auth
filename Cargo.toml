@@ -24,3 +24,4 @@ tracing-subscriber = { version = "0.3.16", features = ["env-filter"]}
 tower-http = { version = "0.5.2", features = ["trace"] }
 entity = { path = "entity" }
 migration = { path = "migration" } 
+sha256 = "1.5.0"

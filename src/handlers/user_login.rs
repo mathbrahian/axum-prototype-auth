@@ -1,10 +1,4 @@
-use argon2::{
-    password_hash::{
-        PasswordHash,
-        PasswordVerifier
-    },
-    Argon2,
-};
+use sha256::digest;
 
 use axum::{
     extract::{
@@ -56,11 +50,8 @@ pub async fn user_login(
             (StatusCode::BAD_REQUEST, Json(error_email))
         })?;
 
-    let parsed_hash = PasswordHash::new(&user_filter.password).unwrap();
-
-    let is_valid = Argon2::default()
-        .verify_password(payload.password.as_bytes(), &parsed_hash)
-        .is_ok();
+    let val = digest(payload.password.clone());
+    let is_valid = val == user_filter.password;
 
     if !is_valid {
         let error_is_valid_password = serde_json::json!({
