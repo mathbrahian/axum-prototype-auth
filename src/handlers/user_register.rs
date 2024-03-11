@@ -80,6 +80,26 @@ pub async fn user_register(
     Ok((StatusCode::CREATED, Json(authenticate)))
 }
 
+pub async fn user_delete(
+    State(state): State<AppState>,
+    Json(payload): Json<GetUser>,
+) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
+    let _user_filter = user::Entity::delete_many()
+    .filter(user::Column::Email.eq(payload.id)).exec(&state.conn).await
+    .map_err(|e| {
+        let error_database = serde_json::json!({
+            "message": format!("Database error: {}", e),
+        });
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(error_database))
+    });
+
+    let authenticate = serde_json::json!({"delete": "sucess"});
+
+    return Ok((StatusCode::ACCEPTED, Json(authenticate)));
+}
+
+
+
 #[derive(Deserialize)]
 pub struct UserDeserialize {
     email: String,
@@ -87,7 +107,7 @@ pub struct UserDeserialize {
     id: Uuid,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct GetUser {
     id: Uuid,
 }
