@@ -85,7 +85,7 @@ pub async fn user_delete(
     Json(payload): Json<GetUser>,
 ) -> Result<impl IntoResponse, (StatusCode, Json<serde_json::Value>)> {
     let _user_filter = user::Entity::delete_many()
-    .filter(user::Column::Email.eq(payload.id)).exec(&state.conn).await
+    .filter(user::Column::Id.eq(payload.id)).exec(&state.conn).await
     .map_err(|e| {
         let error_database = serde_json::json!({
             "message": format!("Database error: {}", e),
@@ -97,7 +97,6 @@ pub async fn user_delete(
 
     return Ok((StatusCode::ACCEPTED, Json(authenticate)));
 }
-
 
 
 #[derive(Deserialize)]
