@@ -38,7 +38,7 @@ async fn main() {
 
     let user_router = Router::new()
         .route("/ping", get(ping))
-        .nest("/api", auth_router());
+        .nest("/", auth_router());
 
     let app = Router::new().nest("/auth", user_router).with_state(state).layer(
         TraceLayer::new_for_http()

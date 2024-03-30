@@ -47,10 +47,3 @@ pub async fn user_delete(
 pub struct GetUser {
     id: Uuid,
 }
-
-#[derive(Serialize, Deserialize)]
-pub struct Claims {
-    sub: String,
-    iat: usize,
-    exp: usize,
-}

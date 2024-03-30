@@ -9,10 +9,7 @@ use axum::{
     response::IntoResponse,
 };
 
-use serde::{
-    Deserialize,
-    Serialize
-};
+use serde::Deserialize;
 
 use sea_orm::{
     ColumnTrait,
@@ -50,7 +47,7 @@ pub async fn user_login(
             (StatusCode::BAD_REQUEST, Json(error_email))
         })?;
 
-    let val = digest(payload.password.clone());
+    let val = digest(payload.password);
     let is_valid = val == user_filter.password;
 
     if !is_valid {
@@ -62,7 +59,7 @@ pub async fn user_login(
 
     let token = create_token(user_filter.id);
 
-    let authenticate = serde_json::json!({"token": token});
+    let authenticate = serde_json::json!({"auth": {"email":user_filter.email, "token": token}});
 
     return Ok((StatusCode::ACCEPTED, Json(authenticate)));
 }
@@ -71,11 +68,4 @@ pub async fn user_login(
 pub struct UserDeserialize {
     email: String,
     password: String,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Claims {
-    sub: String,
-    iat: usize,
-    exp: usize,
 }

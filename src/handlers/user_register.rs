@@ -75,7 +75,7 @@ pub async fn user_register(
 
         let token = create_token(user_model_insert.id);
 
-        let authenticate = serde_json::json!({"token": token, "email": user_model_insert.email});
+        let authenticate = serde_json::json!({"auth": {"token": token, "email": user_model_insert.email}});
 
     Ok((StatusCode::CREATED, Json(authenticate)))
 }
@@ -90,11 +90,4 @@ pub struct UserDeserialize {
 #[derive(Serialize, Deserialize)]
 pub struct GetUser {
     id: Uuid,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct Claims {
-    sub: String,
-    iat: usize,
-    exp: usize,
 }
