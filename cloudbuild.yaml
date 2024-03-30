@@ -1,7 +1,7 @@
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'build'
     args: [ 'build', '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/repo-sub/auth:$SHORT_SHA', '.' ]
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: 'push'
     args: [ 'push', 'us-east1-docker.pkg.dev/$PROJECT_ID/repo-sub/auth:$SHORT_SHA']
 
 options:
